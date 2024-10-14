@@ -101,22 +101,22 @@ fun Greeting(modifier: Modifier = Modifier) {
                     setup {
                         setImages(playerImages)
                         dieTime = 0
-                        setSize(30, 30)
-                        setLocation(10, 100)
+                        setSize(50, 50)
+                        setLocation(10, 160)
                     }
                     loop {
                         if (getStatus() == SpriteStatus.Living) {
                             val (_, y) = getLocation()
                             if (getTime() % 2 == 0) {
                                 if (jump) {
-                                    setLocationY(y - 10)
+                                    setLocationY(y - 5)
                                     if (getLocation().y < 80) {
                                         jump = false
                                     }
                                 } else {
                                     setLocationY(getLocation().y + 10)
-                                    if (getLocation().y >= 180) {
-                                        setLocationY(180)
+                                    if (getLocation().y >= 160) {
+                                        setLocationY(160)
                                     }
                                 }
                             }
@@ -136,8 +136,8 @@ fun Greeting(modifier: Modifier = Modifier) {
                 with(enemy) {
                     setup {
                         setImages(enemyImages)
-                        setSize(30, 30)
-                        setLocation(screenWidth, 180)
+                        setSize(40, 40)
+                        setLocation(screenWidth, 170)
                     }
                     loop {
                         if (getStatus() == SpriteStatus.Living) {
@@ -151,6 +151,7 @@ fun Greeting(modifier: Modifier = Modifier) {
                                 if (intersects(player)) {
                                     player.setImages(playerGoToDieImages)
                                     player.setStatus(SpriteStatus.GoingToDie)
+                                    player.setLocationY(160)
                                     setStatus(SpriteStatus.Dead)
                                 }
                             }
