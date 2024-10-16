@@ -1,123 +1,36 @@
 package org.gongclouds.canvasdemo
 
 import androidx.compose.ui.graphics.ImageBitmap
-import kotlin.math.absoluteValue
 
-data class Location(val x: Int, val y: Int)
-data class Size(val w: Int, val h: Int)
+open class Sprite() {
+    var x = 0
+    var y = 0
+    var width = 0
+    var height = 0
+    var time = 0
+    var die = false
+    lateinit var imageBitmap: ImageBitmap
+    lateinit var settingFunction: () -> Unit
+    lateinit var loopingFunction: () -> Unit
+    lateinit var data:Object
 
-class Sprite(val name: String) {
-    private var status: SpriteStatus = SpriteStatus.Living
-    private lateinit var images: ArrayList<ImageBitmap>
-    private var imageIndex = 0
-    private var time = 0
-
-    private var left = 0
-    private var top = 0
-    private var width = 0
-    private var height = 0
-
-    private lateinit var onSetupEvent: () -> Unit
-    private lateinit var onUpdateEvent: () -> Unit
-
-    companion object Factory {
-        fun create(name: String): Sprite = Sprite(name)
+    fun set(fn: () -> Unit) {
+        settingFunction = fn
+        settingFunction()
     }
 
-    fun setImages(imageBitmapArrayList: ArrayList<ImageBitmap>) {
-        images = imageBitmapArrayList
-        imageIndex = 0
-    }
-
-    fun getImage(): ImageBitmap {
-        return images[imageIndex]
-    }
-
-    private fun updateRender() {
-        time++
-        if (time % 5 == 0) {
-            if (imageIndex < images.size - 1) {
-                imageIndex += 1
-            } else {
-                imageIndex = 0
-            }
-        }
-    }
-
-    fun setup(event: () -> Unit) {
-        onSetupEvent = event
-        reset()
-    }
-
-    fun loop(event: () -> Unit) {
-        onUpdateEvent = event
-    }
-
-    fun getTime(): Int {
-        return time
+    fun loop(fn: () -> Unit) {
+        loopingFunction = fn
     }
 
     fun reset() {
-        time = 0
-        status = SpriteStatus.Living
-        onSetupEvent()
+        die = false
+        settingFunction()
     }
 
     fun run() {
-        updateRender()
-        onUpdateEvent()
-    }
-
-    fun getCenter(): Location {
-        return Location(width + width / 2, height + height / 2)
-    }
-
-    fun getLocation(): Location {
-        return Location(x = left, y = top)
-    }
-
-    fun setLocation(x: Int, y: Int) {
-        left = x
-        top = y
-    }
-
-    fun setLocationX(x: Int) {
-        left = x
-    }
-
-    fun setLocationY(y: Int) {
-        top = y
-    }
-
-    fun getSize(): Size {
-        return Size(w = width, h = height)
-    }
-
-    fun setSize(w: Int, h: Int) {
-        width = w
-        height = h
-    }
-
-    fun setSizeX(w: Int) {
-        width = w
-    }
-
-    fun setSizeY(h: Int) {
-        height = h
-    }
-
-
-    fun setStatus(spriteStatus: SpriteStatus) {
-        status = spriteStatus
-    }
-
-    fun getStatus(): SpriteStatus {
-        return status
-    }
-
-    fun intersects(target: Sprite): Boolean {
-        val (selfX, selfY) = getLocation()
-        val (targetX, targetY) = target.getLocation()
-        return (selfX - targetX).absoluteValue < width / 2 && (selfY - targetY).absoluteValue < height / 2
+        if (!die) {
+            loopingFunction()
+        }
     }
 }
